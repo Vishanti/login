@@ -5,8 +5,8 @@ import 'package:login/ui/input_decorations.dart';
 import 'package:login/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 10),
-                Text('Login',
+                Text('Crear una cuenta',
                     style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 30),
                 ChangeNotifierProvider(
@@ -35,9 +35,8 @@ class LoginScreen extends StatelessWidget {
                   overlayColor:
                       MaterialStateProperty.all(Colors.indigo.withOpacity(0.1)),
                   shape: const MaterialStatePropertyAll(StadiumBorder())),
-              onPressed: () =>
-                  Navigator.pushReplacementNamed(context, 'register'),
-              child: const Text('Crear una nueva cuenta',
+              onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+              child: const Text('¿Ya tienes una cuenta?',
                   style: TextStyle(fontSize: 18, color: Colors.black87))),
           const SizedBox(height: 50),
         ],
@@ -98,31 +97,24 @@ class _LoginForm extends StatelessWidget {
                     : () async {
                         FocusScope.of(context).unfocus();
 
-                        //Llamar al AuthService para obtener los respectivos metodos, listen en falso para no refrescar
                         final authService =
                             Provider.of<AuthService>(context, listen: false);
 
-                        // Validar el ingreso de los datos al formulario
                         if (!loginFormProvider.isValidForm()) return;
 
                         loginFormProvider.isLoading = true;
 
-                        // Validar los datos de login correcto hacia Firebase
-                        final String? respAuthService = await authService.login(
-                            loginFormProvider.email,
-                            loginFormProvider.password);
+                        // validar si el login es correcto
 
-                        //Si la respuesta es Null quiere dicer que no tiene error la validacion de los datos
+                        final String? respAuthService =
+                            await authService.createUser(
+                                loginFormProvider.email,
+                                loginFormProvider.password);
+
                         if (respAuthService == null) {
                           Navigator.pushReplacementNamed(context, 'home');
                         } else {
-                          if (respAuthService == 'EMAIL_NOT_FOUND') {
-                            NotificacionsService.showSnackbar(
-                                'Email no encontrado');
-                          } else {
-                            NotificacionsService.showSnackbar(
-                                'Contraseña invalida');
-                          }
+                          print(respAuthService);
                           loginFormProvider.isLoading = false;
                         }
                       },
@@ -132,10 +124,11 @@ class _LoginForm extends StatelessWidget {
                 color: Colors.deepPurple,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                child: Text(
+                child: Container(
+                    child: Text(
                   loginFormProvider.isLoading ? 'Espere' : 'Ingresar',
-                  style: const TextStyle(color: Colors.white),
-                ),
+                  style: TextStyle(color: Colors.white),
+                )),
               )
             ],
           )),
