@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Login App',
-      initialRoute: 'login',
+      initialRoute: 'checking',
       routes: {
         'checking': (context) => const CheckAuthScreen(),
         'home': (context) => const HomeScreen(),
